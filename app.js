@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const User = require('./db/userModel')
 const dbConnect = require('./db/dbConnect')
 const auth = require('./auth')
+const mongoose = require('mongoose')
 
 dbConnect()
 const app = express()
@@ -29,6 +30,23 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.get("/", (req, res, next) => {
     res.json({ message: "Hey! this is your server response!" })
     next();
+})
+
+app.get('/db', (req, res) => {
+    mongoose
+        .connect(
+            process.env.DB_URL, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+            }
+        )
+        .then(() => {
+            res.json({ message: "Successfully conected to MongoDB Atlas!" })
+        })
+        .catch((err) => {
+            res.json({ message: "Unable to connect to MongoDB Atla!" })
+            console.error(err);
+        })
 })
 
 app.post('/register', (req, res) => {
